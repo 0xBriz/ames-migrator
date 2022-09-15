@@ -22,8 +22,8 @@ contract Migrator {
 
     constructor() {
         tokens = new address[](2);
-        tokens[0] = address(BUSD);
-        tokens[1] = address(AMES);
+        tokens[0] = address(AMES);
+        tokens[1] = address(BUSD);
     }
 
     function migrate(uint256 amount) external {
@@ -32,8 +32,8 @@ contract Migrator {
         _removeLiquidity();
 
         uint256[] memory nums = new uint256[](2);
-        nums[0] = BUSD.balanceOf(address(this));
-        nums[1] = AMES.balanceOf(address(this));
+        nums[0] = AMES.balanceOf(address(this));
+        nums[1] = BUSD.balanceOf(address(this));
 
         _pairLiquidity(msg.sender, nums);
 
