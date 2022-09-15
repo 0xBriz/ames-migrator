@@ -1,17 +1,11 @@
 import { ethers } from "hardhat";
 
-async function deployFactory() {
-  const SmartChefFactory = await ethers.getContractFactory("SmartChefFactory");
-  const factory = await SmartChefFactory.deploy();
-  await factory.deployed();
-
-  console.log(`SmartChefFactory deployed to ${factory.address}`);
-}
-
-async function deployPool() {}
-
 async function main() {
-  await deployFactory();
+  const Migrator = await ethers.getContractFactory("Migrator");
+  const migrate = await Migrator.deploy();
+  await migrate.deployed();
+
+  console.log(`Migrator deployed to ${migrate.address}`);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
