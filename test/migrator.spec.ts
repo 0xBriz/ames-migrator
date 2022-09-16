@@ -6,6 +6,7 @@ import { formatEther, parseEther } from "ethers/lib/utils";
 import { ERC20_ABI } from "./abi/ERC20_ABI";
 import { ASHARE_BALANCEOF_SLOT, BUSD_BALANCEOF_SLOT, getUniRouter, setTokenBalance } from "./utils";
 import { UNIV2_PAIR_ABI } from "./abi/UniV2Pair";
+import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-with-address";
 
 const LP_HOLDER = "0x891eFc56f5CD6580b2fEA416adC960F2A6156494";
 export const PANCAKESWAP_ROUTER_ADDRESS = "0x10ED43C718714eb63d5aA57B78B54704E256024E";
@@ -75,8 +76,10 @@ describe("Migrator", () => {
   async function addLiquidity() {
     // BUSD is token0
     const reserves = await ashareCakePair.getReserves();
-    const busdIn = parseEther("1000");
+    const busdIn = parseEther("10000");
     const quotedAshareOut = await cakeRouter.quote(busdIn, reserves[0], reserves[1]);
+
+    console.log("quotedAshareOut: " + formatEther(quotedAshareOut));
 
     await BUSD.approve(cakeRouter.address, ethers.constants.MaxUint256);
     await ASHARE.approve(cakeRouter.address, ethers.constants.MaxUint256);
@@ -102,13 +105,17 @@ describe("Migrator", () => {
   //   console.log(formatEther(await amesPool.balanceOf(LP_HOLDER)));
   // });
 
-  // it("Should migrate ASHARE cake LP to APT", async () => {
-  //   await ashareCakePair.connect(account).approve(migrator.address, ethers.constants.MaxUint256);
-  //   await migrator.connect(account).migrate(await ashareCakePair.balanceOf(LP_HOLDER), 1);
-  //   console.log(formatEther(await asharePool.balanceOf(LP_HOLDER)));
-  // });
+  it("Should migrate ASHARE cake LP to APT", async () => {
+    await ashareCakePair.connect(account).approve(migrator.address, ethers.constants.MaxUint256);
+    await migrator.connect(account).migrate(await ashareCakePair.balanceOf(LP_HOLDER), 1);
+    console.log(formatEther(await asharePool.balanceOf(LP_HOLDER)));
 
-  it("Should provide proper input amounts for ASHARE", async () => {
-    expect(true).to.be.true;
+    // It will accept the full amount of ashare and busd, but the price impact
+    // Currently getting 373.015391248562245553 APT for $2k migration
+    // Use swap or quote method to test price impact
   });
+
+  // it("Should provide proper input amounts for ASHARE", async () => {
+  //   expect(true).to.be.true;
+  // });
 });
